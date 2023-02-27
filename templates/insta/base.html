@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="{% url 'insta:index' %}">Home</a></li>
+        <li><a href="{% url 'insta:profile' %}">Profiles</a></li>
+        <li><a href="{% url 'insta:messages' %}">Messages</a></li>
+      </ul>
+    </nav>
+
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{% extends 'insta/base.html' %}
+{% block title %} Posts {% endblock title %}
+{% block content %}
+  <h1>All Posts</h1>
+  {% if posts %}
+    {% for post in posts %}
+      <div>
+        <h2>{{ post.posted_by.username }}</h2>
+        <p>{{ post.post_details }}</p>
+        <p>Likes: {{ post.likes.count }}</p>
+
+            <a href="{% url 'insta:like_post' post.id %}"><button>Like</button></a>
+
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No posts yet.</p>
+  {% endif %}
+{% endblock %}

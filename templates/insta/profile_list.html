@@ -1,0 +1,10 @@
+{% extends 'insta/base.html' %}
+
+{% block content %}
+  <h1>All User Profiles</h1>
+  <ul>
+    {% for profile in profiles %}
+      <li><a href="{% url 'insta:profile_id' profile.id %}">{{ profile.username }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

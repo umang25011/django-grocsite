@@ -1,0 +1,9 @@
+
+{% extends 'insta/base.html' %}
+{% block title %} {{ user.username }}'s Profile {% endblock title %}
+{% block content %}
+  <h1>{{ user.username }}'s Profile</h1>
+    <p><strong>User ID:</strong> {{ user.id }}</p>
+    <p><strong>Bio:</strong> {{ user.bio }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+{% endblock %}
