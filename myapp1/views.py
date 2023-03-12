@@ -3,6 +3,7 @@ from django.views import View
 
 from .models import Type, Item, Client, OrderItem
 from django.shortcuts import get_object_or_404, render
+from .forms import BookForm, OrderItemForm
 import calendar
 
 
@@ -53,6 +54,40 @@ class OrdersCreate(View):
         response.write(f"Order of {item.name} by {client.get_full_name()} Placed Successfully")
 
         return response
+
+
+def order(request):
+    if request.method == "POST":
+        form = BookForm(request.POST)
+        print("Not Cleaned Data: ")
+        print(form)
+        # print(form.cleaned_data)
+        if form.is_valid():
+            print("Cleaned Data: ")
+            print(form.cleaned_data)
+            message = f"Your Order of book: {form.cleaned_data['title']} Successful"
+            myform = BookForm()
+            return render(request, "myapp1/order.html", {"myform": myform, "message": message})
+    else:
+        myform = BookForm()
+        return render(request, "myapp1/order.html", {"myform": myform})
+
+
+def items(request):
+    itemlist = Item.objects.all().order_by('id')[:20]
+    return render(request, 'myapp1/items.html', {'itemlist': itemlist})
+
+def placeorder(request):
+    if request.method == "POST":
+        form = OrderItemForm(request.POST)
+        form.save()
+        if form.is_valid():
+            print(form.cleaned_data)
+            new_form = OrderItemForm()
+            return render(request, "myapp1/placeorder.html", {"form": new_form, "message" : f"Order of {form.cleaned_data['item'].name} Placed Successfully"})
+    else:
+        form = OrderItemForm()
+        return render(request, "myapp1/placeorder.html", {"form": form})
 
 # original function-based view orders was handling a single HTTP GET request. When converting this to a class-based view,
 # we created a new class OrderView that inherits from Django's built-in View class. We then defined a get method within '

@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Online Grocery Store</title>
-</head>
-<body>
-{% if type_list %}
+{% extends 'myapp1/base.html' %}
+{% block body_block %}
+    {% if type_list %}
     <h2> List of Types </h2>
     <ol>
         {% for type in type_list %}
@@ -15,8 +10,4 @@
 {% else %}
     <strong> None of the types is available! </strong>
 {% endif %}
-
-<p><a href={% url "myapp1:about" %}>About Page</a></p>
-
-</body>
-</html>
+{% endblock %}
