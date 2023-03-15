@@ -1,6 +1,6 @@
 {% extends 'myapp1/base.html' %}
 {% block body_block %}
-    {% if type_list %}
+    {% if type_list %}<h1>You have visited: {{ visits }}</h1>
     <h2> List of Types </h2>
     <ol>
         {% for type in type_list %}

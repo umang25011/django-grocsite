@@ -1,0 +1,13 @@
+{% extends 'myapp1/base.html' %}
+{% block body_block %}
+
+    <h2> Item: {{ item.name }}  </h2>
+
+    <ul>
+        <li><p>People Interested: {{ item.interested }}</p></li>
+        <li><p>Price: {{ item.price }}</p></li>
+        <li><p>Available Items: {{ item.stock }}</p></li>
+    </ul>
+    <div>Add your Interest</div>
+    {{ form.as_p }}
+{% endblock %}

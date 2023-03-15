@@ -3,13 +3,31 @@ from django.views import View
 
 from .models import Type, Item, Client, OrderItem
 from django.shortcuts import get_object_or_404, render
-from .forms import BookForm, OrderItemForm
+from .forms import BookForm, OrderItemForm, InterestedForm
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
 import calendar
 
 
+class OurLoginView(LoginView):
+    template_name = "myapp1/../templates/registration/login.html"
+
+
+@login_required
 def index(request):
+
+
+    if "visits" in request.COOKIES:
+        visits = request.COOKIES['visits']
+        visits = int(visits) + 1
+    else:
+        visits = 1
+
     type_list = Type.objects.all().order_by('id')[:7]
-    return render(request, 'myapp1/index.html', {'type_list': type_list})
+
+    response = render(request, 'myapp1/index.html', {'type_list': type_list, 'visits' : visits })
+    response.set_cookie("visits", value = visits, max_age=5)
+    return response
 
 
 def about(request):
@@ -77,18 +95,32 @@ def items(request):
     itemlist = Item.objects.all().order_by('id')[:20]
     return render(request, 'myapp1/items.html', {'itemlist': itemlist})
 
+
 def placeorder(request):
-    if request.method == "POST":
+    msg = ''
+    itemlist = Item.objects.all()
+    if request.method == 'POST':
         form = OrderItemForm(request.POST)
-        form.save()
         if form.is_valid():
-            print(form.cleaned_data)
-            new_form = OrderItemForm()
-            return render(request, "myapp1/placeorder.html", {"form": new_form, "message" : f"Order of {form.cleaned_data['item'].name} Placed Successfully"})
+            order = form.save(commit=False)
+            if order.no_of_items <= order.item.stock:
+                order.item.stock -= order.no_of_items
+                order.item.save()
+                order.save()
+                msg = 'Your order has been placed successfully.'
+            else:
+                msg = 'We do not have sufficient stock to fill your order.'
+
+            return render(request, 'myapp1/order_response.html', {'msg': msg})
     else:
         form = OrderItemForm()
-        return render(request, "myapp1/placeorder.html", {"form": form})
+        return render(request, 'myapp1/placeorder.html', {'form': form, 'msg': msg, 'itemlist':itemlist})
 
+
+def itemdetail(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    interested_form = InterestedForm()
+    return render(request, "myapp1/itemdetail.html", {"item" : item, "form": interested_form})
 # original function-based view orders was handling a single HTTP GET request. When converting this to a class-based view,
 # we created a new class OrderView that inherits from Django's built-in View class. We then defined a get method within '
 # this class to handle the HTTP GET request.

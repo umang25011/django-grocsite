@@ -5,6 +5,6 @@
     <form action="{% url "myapp1:placeorder" %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-    <input type="submit" value="Placeorder" />
+    <input type="submit" value="Place Order" />
     </form>
 {% endblock %}

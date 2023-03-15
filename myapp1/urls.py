@@ -1,4 +1,3 @@
-
 from django.urls import path
 from . import views
 from .views import OrdersList, OrdersCreate
@@ -13,4 +12,6 @@ urlpatterns = [
     path("order/", views.order, name="order"),
     path("placeorder/", views.placeorder, name="placeorder"),
     path("items/", views.items, name="items"),
+    path("itemdetail/<int:item_id>/", views.itemdetail, name="itemdetail"),
+    path("accounts/login/", views.OurLoginView.as_view(), name="login")
 ]

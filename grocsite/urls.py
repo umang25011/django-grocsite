@@ -20,5 +20,6 @@ urlpatterns = [
     path('myapp1/', include('myapp1.urls', namespace="myapp1")),
     path('insta/', include("insta.urls", namespace="insta")),
     path('admin/', admin.site.urls),
+    path('accounts/', include("django.contrib.auth.urls"))
 
 ]

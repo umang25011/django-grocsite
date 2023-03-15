@@ -2,7 +2,11 @@
 {% block body_block %}
     <h2>Items: </h2>
     <ul>{% for item in itemlist %}
-        <li> {{ item.name }}</li>
+        <li><a href="{% url "myapp1:itemdetail" item.id %}">{{ item.name }}</a></li>
     {% endfor %}
+    </ul>
+
+    <ul>
+        <li><a href="{% url 'myapp1:placeorder' %}"> Place Order </a></li>
     </ul>
 {% endblock %}

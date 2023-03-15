@@ -10,7 +10,7 @@ class OrderItemForm(forms.ModelForm):
         model = OrderItem
         fields = ["item", "client", "no_of_items"]
         widgets = {
-            "client" : forms.RadioSelect
+            "client": forms.RadioSelect
         }
         labels = {
             "client" : "Client Name",
