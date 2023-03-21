@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 
 from .models import Type, Item, Client, OrderItem
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, reverse
 from .forms import BookForm, OrderItemForm, InterestedForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login, logout
@@ -19,7 +19,8 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect("/myapp1")
+                return HttpResponseRedirect(reverse("myapp1:index"))
+
             else:
                 return HttpResponse('Your account is disabled.')
         else:
@@ -31,7 +32,7 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
-    return HttpResponseRedirect("/myapp1")
+    return HttpResponseRedirect(reverse("myapp1:index"))
 
 
 @login_required
@@ -41,6 +42,7 @@ def index(request):
         visits = int(visits) + 1
     else:
         visits = 1
+
 
     type_list = Type.objects.all().order_by('id')[:7]
 
@@ -141,6 +143,8 @@ def itemdetail(request, item_id):
         form = InterestedForm(request.POST)
         if form.is_valid():
             item = get_object_or_404(Item, id=item_id)
+            print("NOrm", form.data)
+            print("Cleaned", form.cleaned_data)
             if form.cleaned_data['interested'] == '1':
                 item.interested += 1
             else:
@@ -160,7 +164,7 @@ def itemdetail(request, item_id):
 def myorders(request):
     try:
         user = Client.objects.get(id=request.user.id)
-        orders = OrderItem.objects.all()
+        orders = OrderItem.objects.all().filter(client=request.user)
         return render(request, "myapp1/myorders.html", {"orders": orders})
     except Client.DoesNotExist:
         return render(request, "myapp1/myorders.html", {"msg": "You are not a registered client!"})

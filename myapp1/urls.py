@@ -15,5 +15,5 @@ urlpatterns = [
     path("myorders/", views.myorders, name="myorders"),
     path("items/<int:item_id>/", views.itemdetail, name="itemdetail"),
     path("accounts/login/", views.user_login, name="login"),
-    path("accounts/logout/", views.user_logout, name="logout")
+    path("logout/", views.user_logout, name="logout")
 ]

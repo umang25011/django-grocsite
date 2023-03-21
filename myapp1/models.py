@@ -44,6 +44,11 @@ class Client(User):
     def __str__(self):
         return f"Type: {self.get_full_name()}"
 
+    def local_client(self):
+        if self.city == "WD":
+            return "Yes"
+        else:
+            return "No"
     class Meta:
         verbose_name = "Client"
 
