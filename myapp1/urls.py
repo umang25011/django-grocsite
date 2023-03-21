@@ -12,6 +12,8 @@ urlpatterns = [
     path("order/", views.order, name="order"),
     path("placeorder/", views.placeorder, name="placeorder"),
     path("items/", views.items, name="items"),
-    path("itemdetail/<int:item_id>/", views.itemdetail, name="itemdetail"),
-    path("accounts/login/", views.OurLoginView.as_view(), name="login")
+    path("myorders/", views.myorders, name="myorders"),
+    path("items/<int:item_id>/", views.itemdetail, name="itemdetail"),
+    path("accounts/login/", views.user_login, name="login"),
+    path("accounts/logout/", views.user_logout, name="logout")
 ]

@@ -1,22 +1,41 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 
 from .models import Type, Item, Client, OrderItem
 from django.shortcuts import get_object_or_404, render
 from .forms import BookForm, OrderItemForm, InterestedForm
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 import calendar
 
 
-class OurLoginView(LoginView):
-    template_name = "myapp1/../templates/registration/login.html"
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        print(user)
+        if user:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect("/myapp1")
+            else:
+                return HttpResponse('Your account is disabled.')
+        else:
+            return HttpResponse('Invalid login details.')
+    else:
+        return render(request, 'myapp1/login.html')
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect("/myapp1")
 
 
 @login_required
 def index(request):
-
-
     if "visits" in request.COOKIES:
         visits = request.COOKIES['visits']
         visits = int(visits) + 1
@@ -25,8 +44,8 @@ def index(request):
 
     type_list = Type.objects.all().order_by('id')[:7]
 
-    response = render(request, 'myapp1/index.html', {'type_list': type_list, 'visits' : visits })
-    response.set_cookie("visits", value = visits, max_age=5)
+    response = render(request, 'myapp1/index.html', {'type_list': type_list, 'visits': visits})
+    response.set_cookie("visits", value=visits, max_age=5)
     return response
 
 
@@ -114,16 +133,34 @@ def placeorder(request):
             return render(request, 'myapp1/order_response.html', {'msg': msg})
     else:
         form = OrderItemForm()
-        return render(request, 'myapp1/placeorder.html', {'form': form, 'msg': msg, 'itemlist':itemlist})
+        return render(request, 'myapp1/placeorder.html', {'form': form, 'msg': msg, 'itemlist': itemlist})
 
 
 def itemdetail(request, item_id):
+    if request.method == "POST":
+        form = InterestedForm(request.POST)
+        if form.is_valid():
+            item = get_object_or_404(Item, id=item_id)
+            if form.cleaned_data['interested'] == '1':
+                item.interested += 1
+            else:
+                item.interested -= 1
+                if item.interested < 0:
+                    item.interested = 0
+            item.save()
+
+        return render(request, "myapp1/itemdetail.html",
+                      {"item": item, "form": InterestedForm(), "msg": "Your Interest Added"})
     item = get_object_or_404(Item, id=item_id)
     interested_form = InterestedForm()
-    return render(request, "myapp1/itemdetail.html", {"item" : item, "form": interested_form})
-# original function-based view orders was handling a single HTTP GET request. When converting this to a class-based view,
-# we created a new class OrderView that inherits from Django's built-in View class. We then defined a get method within '
-# this class to handle the HTTP GET request.
-# The get method performed the same functionality, but in a more cleaner way as the same class would be able to handle
-# future POST, PUT, and DELETE methods in the same class.
-# Also, we only need to register the Class only once in urls.py instead of for every request.
+    return render(request, "myapp1/itemdetail.html", {"item": item, "form": interested_form})
+
+
+@login_required
+def myorders(request):
+    try:
+        user = Client.objects.get(id=request.user.id)
+        orders = OrderItem.objects.all()
+        return render(request, "myapp1/myorders.html", {"orders": orders})
+    except Client.DoesNotExist:
+        return render(request, "myapp1/myorders.html", {"msg": "You are not a registered client!"})

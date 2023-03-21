@@ -8,6 +8,15 @@
         <li><p>Price: {{ item.price }}</p></li>
         <li><p>Available Items: {{ item.stock }}</p></li>
     </ul>
-    <div>Add your Interest</div>
-    {{ form.as_p }}
+    {% if msg %}
+        {{ msg }}
+    {% else %}
+        <h2>Add your Interest</h2>
+        <form action="{% url "myapp1:itemdetail" item.id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Add Interest">
+        </form>
+    {% endif %}
+
 {% endblock %}
